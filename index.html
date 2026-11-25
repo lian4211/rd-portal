@@ -252,7 +252,7 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
     url.searchParams.set("after", String(after));
     const socket = new WebSocket(url);
     signal = socket;
-    setState("信令连接中…");
+    if (!peer || peer.connectionState !== "connected") setState("信令连接中…");
     signalReady = new Promise((resolve, reject) => {
       // 注意：不能在执行器里写 signalReady.resolve —— 此时 signalReady 尚未被赋值，
       // 会拿到旧值(null)而抛错，导致 onopen 里的 resolve 失效、认证帧永远发不出去。
