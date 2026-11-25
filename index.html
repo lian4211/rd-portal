@@ -596,6 +596,13 @@ select.mini{height:30px;padding:0 6px;border:1px solid var(--line);border-radius
       return;
     }
     if (data.mode !== "h264") {
+      const reason = typeof data.fallbackReason === "string" ? data.fallbackReason : "";
+      // 两块硬件编码都起不来（常见于 Windows N/KN 精简版缺 Media Feature Pack），门户就彻底没戏。
+      if (reason.includes("Media Foundation 编码不可用") || reason.includes("NVENC 不可用")) {
+        overlay("这台电脑没有可用的 H.264 编码器", "门户的视频通道只承载 H.264，而这台电脑既没有 NVIDIA 硬件编码，Media Foundation 也不可用。\n临时办法：在被控端本机打开 http://127.0.0.1:7070 用局域网直连观看。\n根治：装回 Media Feature Pack（Windows N/KN 版需要），或换一台支持 H.264 编码的机器。");
+        notice("该机器缺 H.264 编码器，无法经门户出画面。");
+        return;
+      }
       overlay("当前为 JPEG 兼容模式", "门户的视频通道只承载 H.264，JPEG 帧无法经门户传输。点下方「切回自动」即可恢复画面；若确实要用 JPEG，只能在被控端本机打开 http://127.0.0.1:7070 走局域网直连。");
       offerJpegRecovery();
       return;
