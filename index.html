@@ -272,7 +272,8 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
     };
     socket.onmessage = event => {
       if (generation !== signalGeneration) return;
-      if (!signalReady) setState("信令已认证", "ok");
+      // 只在视频尚未连通时展示信令状态，避免服务端周期性轮换重连后把"已连接"覆盖掉。
+      if (!signalReady && (!peer || peer.connectionState !== "connected")) setState("信令已认证", "ok");
       let message;
       try { message = JSON.parse(event.data); } catch { return; }
       if (Number.isSafeInteger(message.id) && message.id > after) after = message.id;
