@@ -3,100 +3,198 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#08110f">
-<meta name="description" content="RD 固定桌面观看门户。仅观看桌面，不提供远程控制。">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://kxzpdaitklldbxtuzcri.supabase.co wss://kxzpdaitklldbxtuzcri.supabase.co; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'>
-<title>RD · 固定桌面观看门户</title>
+<meta name="theme-color" content="#070f0d">
+<meta name="description" content="RD 桌面观看。仅观看桌面，不提供远程控制。">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://kxzpdaitklldbxtuzcri.supabase.co wss://kxzpdaitklldbxtuzcri.supabase.co; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'">
+<title>RD · 桌面观看</title>
 <style>
 :root{
   color-scheme:dark;
-  --site-bg:#08110f;--site-fg:#edf7f2;--site-accent:#71e2bd;--site-on-accent:#07130f;
-  --site-surface:#101d19;--site-muted:#91aaa0;--site-border:#263b33;
-  --site-font:Inter,"Segoe UI","Microsoft YaHei",system-ui,sans-serif;
-  --site-radius:18px;--site-space:1;--site-type:1;--site-motion:1;
-  --line:var(--site-border);--muted:var(--site-muted);--danger:#ff9daf;
-  --space:calc(4px * var(--site-space));--duration:calc(160ms * var(--site-motion));
+  --bg:#070f0d;--surface:#0e1a17;--surface-2:#122420;--line:#22392f;--line-soft:#1a2c25;
+  --fg:#eaf5ef;--muted:#8ba79c;--accent:#5fe0b4;--accent-dim:#2f8f74;--on-accent:#04140f;
+  --warn:#f6c76c;--danger:#ff92a6;
+  --font:Inter,"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"Cascadia Mono",Consolas,"SF Mono",monospace;
+  --r:16px;
 }
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--site-bg);color:var(--site-fg);font-family:var(--site-font);font-size:calc(16px * var(--site-type))}
-body{min-height:100vh;min-height:100dvh}
-button,input{font:inherit}
-button{cursor:pointer;transition:background var(--duration),border-color var(--duration),transform var(--duration)}
-button:focus-visible,input:focus-visible{outline:2px solid var(--site-accent);outline-offset:3px}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:var(--font);-webkit-font-smoothing:antialiased}
+body{min-height:100vh;min-height:100dvh;overflow:hidden}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;transition:background .16s,border-color .16s,transform .12s,color .16s}
+button:active{transform:scale(.97)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 [hidden]{display:none!important}
-#pairing{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:calc(24px * var(--site-space));background:radial-gradient(circle at 50% 0%,#18372c 0,transparent 52%)}
-#pairing-card{width:min(470px,100%);padding:calc(34px * var(--site-space));border:1px solid var(--line);border-radius:var(--site-radius);background:color-mix(in srgb,var(--site-surface) 94%,transparent);box-shadow:0 30px 100px #0007}
-.brand{display:flex;align-items:center;gap:calc(12px * var(--site-space));margin-bottom:calc(30px * var(--site-space))}
-.mark{display:grid;place-items:center;width:46px;height:46px;border-radius:calc(var(--site-radius) * .65);background:var(--site-accent);color:var(--site-on-accent);font-weight:850;letter-spacing:-1px}
-.brand-name{font-size:calc(20px * var(--site-type));font-weight:780;letter-spacing:-.3px}
-.brand-sub{color:var(--muted);font-size:calc(12px * var(--site-type));margin-top:3px}
-.badge{margin-left:auto;padding:6px 9px;border:1px solid var(--line);border-radius:999px;color:var(--site-accent);font-size:calc(11px * var(--site-type));white-space:nowrap}
-h1{margin:0 0 calc(10px * var(--site-space));font-size:calc(29px * var(--site-type));letter-spacing:-.8px}
-.lead{margin:0 0 calc(26px * var(--site-space));color:var(--muted);font-size:calc(14px * var(--site-type));line-height:1.65}
-label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;font-size:calc(13px * var(--site-type))}
-#code{width:100%;height:58px;padding:0 12px;border:1px solid #385348;border-radius:calc(var(--site-radius) * .7);background:#09120f;color:var(--site-fg);text-align:center;font-family:"Cascadia Mono",Consolas,monospace;font-size:calc(19px * var(--site-type));letter-spacing:3px}
-#code::placeholder{color:#587067;font-family:var(--site-font);font-size:calc(13px * var(--site-type));letter-spacing:0}
-.primary{width:100%;height:48px;margin-top:calc(16px * var(--site-space));border:0;border-radius:calc(var(--site-radius) * .65);background:var(--site-accent);color:var(--site-on-accent);font-weight:760}
+
+/* ---------- 通用面板 ---------- */
+.screen{position:fixed;inset:0;display:grid;place-items:center;padding:22px;overflow:auto}
+.screen::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(900px 520px at 50% -10%,#173a2e 0,transparent 60%),
+  radial-gradient(700px 500px at 100% 110%,#10241f 0,transparent 55%);pointer-events:none}
+.card{position:relative;width:min(470px,100%);padding:32px;border:1px solid var(--line);border-radius:22px;
+  background:linear-gradient(180deg,#0f1e1a 0,#0c1815 100%);box-shadow:0 30px 90px #000000a6,0 1px 0 #ffffff0a inset}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.mark{display:grid;place-items:center;width:44px;height:44px;border-radius:13px;
+  background:linear-gradient(160deg,#7df0c8,#3ec49b);color:#04140f;font-weight:850;font-size:15px;letter-spacing:-.5px;box-shadow:0 6px 18px #2f8f7440}
+.brand-text{font-size:17px;font-weight:760;letter-spacing:-.2px}
+.brand-sub{color:var(--muted);font-size:12px;margin-top:2px}
+.tag{margin-left:auto;padding:5px 9px;border:1px solid var(--line);border-radius:999px;color:var(--accent);font-size:11px;white-space:nowrap}
+h1{margin:0 0 8px;font-size:26px;letter-spacing:-.7px}
+.lead{margin:0 0 22px;color:var(--muted);font-size:13.5px;line-height:1.65}
+label.field{display:block;margin-bottom:8px;color:#cfe0d8;font-size:12.5px}
+input.code{width:100%;height:56px;padding:0 12px;border:1px solid #2f4a3f;border-radius:13px;background:#08120f;
+  color:var(--fg);text-align:center;font-family:var(--mono);font-size:17px;letter-spacing:2.5px;transition:border-color .16s,box-shadow .16s}
+input.code::placeholder{font-family:var(--font);font-size:13px;letter-spacing:0;color:#54706a}
+input.code:focus{border-color:var(--accent);box-shadow:0 0 0 4px #5fe0b41a;outline:none}
+.primary{width:100%;height:48px;margin-top:14px;border:0;border-radius:12px;
+  background:linear-gradient(180deg,#6ceae0 0,#4ecfa8 100%);color:var(--on-accent);font-weight:760;font-size:15px;
+  box-shadow:0 8px 24px #2f8f7433}
 .primary:hover{filter:brightness(1.05)}
-.primary:disabled{opacity:.55;cursor:wait}
-#error{min-height:calc(22px * var(--site-space));margin-top:calc(10px * var(--site-space));color:var(--danger);font-size:calc(13px * var(--site-type));line-height:1.5}
-.rules{display:grid;gap:calc(9px * var(--site-space));margin-top:calc(22px * var(--site-space));padding-top:calc(20px * var(--site-space));border-top:1px solid var(--line)}
-.rule{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:calc(12px * var(--site-type))}
-.check{display:grid;place-items:center;width:17px;height:17px;border:1px solid #385348;border-radius:50%;color:var(--site-accent);font-size:10px}
-#viewer-shell{position:fixed;inset:0;display:grid;grid-template-rows:auto 1fr;background:#030605}
-#toolbar{z-index:3;display:flex;align-items:center;gap:calc(8px * var(--site-space));padding:calc(12px * var(--site-space)) calc(16px * var(--site-space));border-bottom:1px solid var(--line);background:#0a1310ee;backdrop-filter:blur(14px)}
-#device-name{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;font-size:calc(14px * var(--site-type))}
-.pill{display:flex;align-items:center;gap:7px;min-height:32px;padding:0 10px;border:1px solid var(--line);border-radius:999px;background:#101d19;color:#c5d8cf;font-size:calc(11px * var(--site-type));white-space:nowrap}
-.dot{width:7px;height:7px;border-radius:50%;background:#f6c76c}
-.dot.ok{background:var(--site-accent)}.dot.bad{background:var(--danger)}
+.primary:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.ghost{width:100%;height:40px;margin-top:8px;border:1px solid var(--line);border-radius:11px;background:transparent;
+  color:var(--muted);font-size:13px}
+.ghost:hover{color:var(--fg);border-color:#3a5c4e;background:#122420}
+.error{min-height:20px;margin-top:10px;color:var(--danger);font-size:12.5px;line-height:1.5}
+.hint{display:flex;gap:8px;align-items:flex-start;margin-top:18px;padding-top:16px;border-top:1px solid var(--line-soft);
+  color:var(--muted);font-size:12px;line-height:1.6}
+.hint b{color:#b9d3c9;font-weight:600}
+
+/* ---------- 状态页 ---------- */
+#device-card{display:flex;align-items:center;gap:13px;padding:15px 16px;margin-bottom:18px;
+  border:1px solid var(--line);border-radius:14px;background:#0a1512}
+#device-icon{display:grid;place-items:center;width:40px;height:40px;border-radius:11px;background:#16302a;font-size:18px}
+#device-meta{min-width:0}
+#device-title{font-weight:700;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#device-state{color:var(--muted);font-size:12px;margin-top:3px;display:flex;align-items:center;gap:6px}
+.beacon{position:relative;width:8px;height:8px;border-radius:50%;background:var(--warn);flex:none}
+.beacon.on{background:var(--accent);box-shadow:0 0 0 0 #5fe0b480;animation:pulse 2.1s infinite}
+.beacon.off{background:#5d7570}
+.beacon.bad{background:var(--danger)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 #5fe0b466}70%{box-shadow:0 0 0 7px #5fe0b400}100%{box-shadow:0 0 0 0 #5fe0b400}}
+.mask{font-family:var(--mono);font-size:12px;color:#7e9c92;letter-spacing:1.2px}
+.checkline{display:flex;align-items:center;gap:9px;margin-top:14px;color:var(--muted);font-size:12.5px;cursor:pointer;user-select:none}
+.checkline input{width:15px;height:15px;accent-color:var(--accent-dim);cursor:pointer}
+
+/* ---------- 观看页 ---------- */
+#viewer-shell{position:fixed;inset:0;display:grid;grid-template-rows:auto 1fr;background:#020605}
+#toolbar{position:relative;z-index:4;display:flex;align-items:center;gap:7px;padding:9px 12px;
+  border-bottom:1px solid var(--line);background:#081310f2;backdrop-filter:blur(16px);flex-wrap:wrap}
+#device-name{max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;font-size:13.5px;margin-right:2px}
+.pill{display:flex;align-items:center;gap:6px;min-height:30px;padding:0 10px;border:1px solid var(--line);
+  border-radius:999px;background:#0d1a16;color:#c2d8cf;font-size:11.5px;white-space:nowrap}
 .spacer{flex:1}
-.action{height:34px;padding:0 12px;border:1px solid #344d42;border-radius:9px;background:#101d19;color:var(--site-fg);font-size:calc(12px * var(--site-type))}
-.action:hover{border-color:#5a7a6c;background:#172821}
-.action.danger{color:#ffd5de;border-color:#67404a}
-#stage{position:relative;min-height:0;display:grid;place-items:center;overflow:hidden;background:#020403}
-#video{width:100%;height:100%;object-fit:contain;display:none}
-#overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:12px;width:min(420px,90%);padding:24px;border:1px solid var(--line);border-radius:var(--site-radius);background:#0a1310ee;text-align:center}
-#overlay-title{font-weight:720;font-size:calc(16px * var(--site-type))}
-#overlay-copy{color:var(--muted);font-size:calc(13px * var(--site-type));line-height:1.55}
-#notice{position:fixed;z-index:5;left:50%;bottom:28px;transform:translateX(-50%);max-width:min(600px,90vw);padding:12px 16px;border:1px solid var(--line);border-radius:12px;background:#101d19f5;color:#dbe9e2;font-size:calc(13px * var(--site-type));line-height:1.5;text-align:center;box-shadow:0 12px 40px #0008}
-#notice button{margin-left:10px;padding:5px 9px;border:0;border-radius:7px;background:var(--site-accent);color:var(--site-on-accent)}
-@media(max-width:760px){#pairing{padding:16px}#pairing-card{padding:25px}.badge{display:none}#toolbar{flex-wrap:wrap}.pill.stats{display:none}#device-name{max-width:120px}.action{padding:0 9px}#viewer-shell{grid-template-rows:auto 1fr}}
-@media(prefers-reduced-motion:reduce){button{transition:none}}
+.group{display:flex;align-items:center;gap:1px;padding:2px;border:1px solid var(--line);border-radius:10px;background:#0d1a16}
+.group button{height:26px;min-width:28px;padding:0 7px;border:0;border-radius:8px;background:transparent;color:#c2d8cf;font-size:12px}
+.group button:hover{background:#1a2f28;color:#fff}
+.group .readout{min-width:46px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted);padding:0 2px}
+select.mini{height:30px;padding:0 6px;border:1px solid var(--line);border-radius:9px;background:#0d1a16;color:#c2d8cf;font-size:11.5px;max-width:112px}
+.action{height:30px;padding:0 11px;border:1px solid #2f4a3f;border-radius:9px;background:#0d1a16;color:var(--fg);font-size:12px}
+.action:hover{border-color:#4d7365;background:#17281f}
+.action.danger{color:#ffd5de;border-color:#5d3b44}
+.action.danger:hover{background:#2a1418;border-color:#8a4d5a}
+
+#stage{position:relative;min-height:0;overflow:hidden;background:#020605;
+  cursor:grab;touch-action:none}
+#stage.dragging{cursor:grabbing}
+#frame{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+#video{display:block;width:100%;height:100%;background:#000}
+#overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;display:grid;justify-items:center;
+  gap:9px;width:min(420px,88vw);padding:22px;border:1px solid var(--line);border-radius:16px;
+  background:#081310f2;text-align:center;backdrop-filter:blur(10px);box-shadow:0 20px 60px #000a}
+#overlay-title{font-weight:720;font-size:15px}
+#overlay-copy{color:var(--muted);font-size:12.5px;line-height:1.55}
+#zoom-hint{position:absolute;left:12px;bottom:10px;z-index:2;color:#4d6b62;font-size:11px;pointer-events:none;transition:opacity .3s}
+#notice{position:fixed;z-index:6;left:50%;bottom:26px;transform:translateX(-50%);max-width:min(620px,92vw);
+  padding:11px 15px;border:1px solid var(--line);border-radius:12px;background:#0f1e1af7;color:#d7e9e1;
+  font-size:12.5px;line-height:1.5;text-align:center;box-shadow:0 14px 44px #000a}
+#notice button{margin-left:10px;padding:5px 9px;border:0;border-radius:7px;background:var(--accent);color:var(--on-accent);font-weight:700}
+
+@media(max-width:820px){
+  .card{padding:24px}
+  #toolbar{gap:6px;padding:8px}
+  #device-name{max-width:110px}
+  .hide-sm{display:none!important}
+  #zoom-hint{display:none}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<section id="pairing" aria-labelledby="title">
-  <div id="pairing-card">
-    <div class="brand"><div class="mark">RD</div><div><div class="brand-name">RD 桌面观看</div><div class="brand-sub">一个地址，连接你的电脑</div></div><span class="badge">固定门户</span></div>
-    <h1 id="title">输入配对码</h1>
-    <p class="lead">使用被控电脑安装时生成的永久 30 位配对码。连接后仅观看桌面，并可暂停、恢复或卸载 RD 服务。</p>
-    <label for="code">永久配对码</label>
-    <input id="code" inputmode="numeric" autocomplete="off" autocapitalize="off" maxlength="30" pattern="[0-9]{30}" placeholder="输入 30 位数字" aria-describedby="error">
-    <button id="join" class="primary">连接桌面</button>
-    <div id="error" role="status" aria-live="polite"></div>
-    <div class="rules">
-      <div class="rule"><span class="check">✓</span><span>配对码永久固定，不会自动更换</span></div>
-      <div class="rule"><span class="check">✓</span><span>固定信令地址，视频走 WebRTC 点对点</span></div>
-      <div class="rule"><span class="check">✓</span><span>不提供鼠标、键盘或桌面远程控制</span></div>
+
+<!-- ① 首次输入配对码 -->
+<section id="pairing" class="screen" aria-labelledby="pair-title">
+  <div class="card">
+    <div class="brand"><div class="mark">RD</div>
+      <div><div class="brand-text">RD 桌面观看</div><div class="brand-sub">一个地址，连接你的电脑</div></div>
+      <span class="tag">仅观看</span>
     </div>
+    <h1 id="pair-title">输入配对码</h1>
+    <p class="lead">被控电脑上安装的 RD 带有一个固定配对码，输入一次即可，之后会记在这台设备上。</p>
+    <label class="field" for="code">30 位配对码</label>
+    <input id="code" class="code" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false"
+           maxlength="30" placeholder="数字或大写字母，可含空格" aria-describedby="pair-error">
+    <button id="join" class="primary">连接桌面</button>
+    <div id="pair-error" class="error" role="status" aria-live="polite"></div>
+    <div class="hint"><span>✓</span><span><b>配对码固定不变</b>，不会自动更换；视频走 WebRTC 点对点直连，门户只负责牵线。</span></div>
   </div>
 </section>
 
-<main id="viewer-shell" hidden aria-label="RD 桌面观看">
+<!-- ② 已保存配对码 → 先看连接状态 -->
+<section id="status" class="screen" aria-labelledby="status-title" hidden>
+  <div class="card">
+    <div class="brand"><div class="mark">RD</div>
+      <div><div class="brand-text">RD 桌面观看</div><div class="brand-sub">已记住这台电脑</div></div>
+      <span class="tag" id="status-tag">待连接</span>
+    </div>
+    <div id="device-card">
+      <div id="device-icon">🖥️</div>
+      <div id="device-meta">
+        <div id="device-title">正在确认设备…</div>
+        <div id="device-state"><span class="beacon" id="beacon"></span><span id="beacon-text">正在探测在线状态</span></div>
+      </div>
+    </div>
+    <div class="mask" id="code-mask">—</div>
+    <button id="enter" class="primary" disabled>进入桌面</button>
+    <label class="checkline"><input type="checkbox" id="auto-enter">在线时自动进入</label>
+    <button id="probe" class="ghost">重新检测状态</button>
+    <button id="forget" class="ghost">换一个配对码</button>
+    <div id="status-error" class="error" role="status" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ③ 画面 -->
+<main id="viewer-shell" hidden aria-label="RD 桌面画面">
   <header id="toolbar">
     <span id="device-name">RD 电脑</span>
-    <span class="pill"><span class="dot" id="dot"></span><span id="state">正在连接</span></span>
-    <span class="pill stats" id="metric">—</span>
+    <span class="pill"><span class="beacon" id="live-beacon"></span><span id="state">正在连接</span></span>
+    <span class="pill hide-sm" id="metric">—</span>
     <span class="spacer"></span>
-    <button class="action" id="sync">重新同步</button>
-    <button class="action" id="pause">暂停</button>
-    <button class="action" id="resume" hidden>恢复</button>
-    <button class="action danger" id="uninstall">卸载</button>
+    <select class="mini hide-sm" id="resolution" title="分辨率档位">
+      <option value="0">原生分辨率</option>
+    </select>
+    <select class="mini hide-sm" id="encoder" title="视频编码方式">
+      <option value="auto">自动选择编码</option>
+      <option value="nvenc">NVENC 硬件</option>
+      <option value="software">软件 H.264</option>
+      <option value="jpeg">JPEG 兼容</option>
+    </select>
+    <div class="group" id="zoom-group">
+      <button id="zoom-out" title="缩小" aria-label="缩小">−</button>
+      <span class="readout" id="zoom-readout">100%</span>
+      <button id="zoom-in" title="放大" aria-label="放大">+</button>
+      <button id="zoom-fit" title="适应窗口" class="hide-sm">适应</button>
+      <button id="zoom-cover" title="填满窗口" class="hide-sm">填满</button>
+    </div>
+    <button class="action hide-sm" id="sync">重新同步</button>
+    <button class="action hide-sm" id="pause">暂停</button>
+    <button class="action hide-sm" id="resume" hidden>恢复</button>
+    <button class="action danger hide-sm" id="uninstall">卸载</button>
     <button class="action" id="leave">断开</button>
   </header>
   <div id="stage">
-    <video id="video" autoplay muted playsinline></video>
+    <div id="frame"><video id="video" autoplay muted playsinline></video></div>
     <div id="overlay"><div id="overlay-title">正在连接</div><div id="overlay-copy">正在与 RD 电脑建立加密视频通道…</div></div>
+    <div id="zoom-hint">滚轮缩放 · 按住右键拖动画面</div>
   </div>
 </main>
 <div id="notice" role="alert" hidden></div>
@@ -106,142 +204,251 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
   "use strict";
   const API_ORIGIN = "https://kxzpdaitklldbxtuzcri.supabase.co";
   const API = API_ORIGIN + "/functions/v1/app";
+  const STORE_KEY = "rd.pair.v2";
   const $ = id => document.getElementById(id);
   const iceServers = [{urls:["stun:stun.l.google.com:19302","stun:stun.cloudflare.com:3478"]}];
-  let session = null, token = "", signal = null, peer = null;
-  let signalGeneration = 0, peerGeneration = 0, after = 0, intentional = false;
-  let reconnectTimer = 0, expiryTimer = 0, metricTimer = 0, negotiating = false, paused = false;
-  let signalReady = null, resolveSignal = null, rejectSignal = null, pending = new Map();
-  let reconnectFailures = 0;
 
   const messages = {
-    invalid_code:"配对码不正确。",
+    invalid_code:"配对码不正确，请核对被控电脑上显示的 30 位配对码。",
     device_offline:"RD 电脑当前离线，请确认它已开机并联网。",
     rate_limited:"尝试过于频繁，请稍后再试。",
-    session_expired:"观看会话已过期，请重新输入配对码。",
+    session_expired:"观看会话已过期，请重新连接。",
     service_unavailable:"门户服务暂时不可用，请稍后重试。",
   };
 
+  let session = null, token = "", signal = null, peer = null;
+  let signalGeneration = 0, peerGeneration = 0, after = 0, intentional = false;
+  let reconnectTimer = 0, expiryTimer = 0, metricTimer = 0, presenceTimer = 0;
+  let negotiating = false, paused = false, reconnectFailures = 0, joining = false;
+  let signalReady = null, resolveSignal = null, rejectSignal = null, pending = new Map();
+  let saved = loadSaved();
+  let view = { zoom: 1, pan: { x: 0, y: 0 }, fit: 1, tx: 0, ty: 0, ready: false };
+  let presets = [0];
+
+  /* ---------------- 本地记忆 ---------------- */
+  function loadSaved() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return null;
+      const value = JSON.parse(raw);
+      if (!value || typeof value.code !== "string" || value.code.length !== 30) return null;
+      return value;
+    } catch { return null; }
+  }
+  function savePair(code, name) {
+    saved = { code, name: name || "", at: Date.now() };
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(saved)); } catch {}
+  }
+  function forgetPair() {
+    saved = null;
+    try { localStorage.removeItem(STORE_KEY); } catch {}
+  }
+  function autoEnter() {
+    try { return localStorage.getItem(STORE_KEY + ".auto") === "1"; } catch { return false; }
+  }
+  function maskCode(code) {
+    if (!code) return "—";
+    return code.slice(0, 4) + " " + "•".repeat(10) + " " + code.slice(-4);
+  }
+
+  /* ---------------- 小工具 ---------------- */
   function setState(text, kind = "") {
     $("state").textContent = text;
-    $("dot").className = "dot" + (kind ? " " + kind : "");
+    $("live-beacon").className = "beacon" + (kind ? " " + kind : "");
   }
-
   function overlay(title, copy, visible = true) {
     $("overlay").hidden = !visible;
-    $("overlay-title").textContent = title;
-    $("overlay-copy").textContent = copy;
+    if (title !== undefined) $("overlay-title").textContent = title;
+    if (copy !== undefined) $("overlay-copy").textContent = copy;
   }
-
   function notice(text, retry = false) {
     $("notice").replaceChildren(document.createTextNode(text));
     if (retry) {
       const button = document.createElement("button");
       button.textContent = "重试";
-      button.onclick = () => { $("notice").hidden = true; connectSignal(); };
+      button.onclick = () => { $("notice").hidden = true; enterViewer(); };
       $("notice").append(button);
     }
     $("notice").hidden = false;
   }
-
   async function api(path, options = {}) {
-    const {headers = {}, ...rest} = options;
-    const response = await fetch(API + path, {cache:"no-store", credentials:"omit", ...rest,
-      headers:{...(token ? {Authorization:"Bearer " + token} : {}), ...headers}});
+    const { headers = {}, ...rest } = options;
+    const response = await fetch(API + path, { cache: "no-store", credentials: "omit", ...rest,
+      headers: { ...(token ? { Authorization: "Bearer " + token } : {}), ...headers } });
     let data = null;
     try { data = await response.json(); } catch {}
     if (!response.ok) throw new Error(messages[data?.error] || `请求失败（${response.status}）。`);
     return data;
   }
 
-  function rejectPending(error) {
-    for (const item of pending.values()) {
-      clearTimeout(item.timer);
-      item.reject(error);
-    }
-    pending.clear();
+  /* ---------------- 屏幕切换 ---------------- */
+  function showPairing(error = "") {
+    intentional = true;
+    teardown();
+    $("viewer-shell").hidden = true;
+    $("status").hidden = true;
+    $("pairing").hidden = false;
+    $("pair-error").textContent = error;
+    $("join").disabled = false;
+    $("code").value = "";
+    $("code").focus();
+  }
+  function showStatus(error = "") {
+    intentional = true;
+    teardown();
+    $("viewer-shell").hidden = true;
+    $("pairing").hidden = true;
+    $("status").hidden = false;
+    $("code-mask").textContent = maskCode(saved?.code);
+    $("auto-enter").checked = autoEnter();
+    startPresence();
+    $("status-error").textContent = error;
+  }
+  function teardown() {
+    closeSignal();
+    closePeer();
+    clearInterval(metricTimer); metricTimer = 0;
+    clearInterval(presenceTimer); presenceTimer = 0;
+    clearTimeout(expiryTimer); expiryTimer = 0;
+    session = null; token = ""; after = 0; paused = false;
+    $("notice").hidden = true;
   }
 
+  /* ---------------- 在线探测 ---------------- */
+  function setBeacon(kind, text) {
+    $("beacon").className = "beacon" + (kind ? " " + kind : "");
+    $("beacon-text").textContent = text;
+  }
+  async function probePresence() {
+    if (!saved) return false;
+    try {
+      const response = await fetch(API + "/api/presence", {
+        method: "POST", cache: "no-store", credentials: "omit",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: saved.code }),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) {
+        setBeacon("bad", messages[data?.error] || "探测失败（" + response.status + "）");
+        $("enter").disabled = true;
+        return false;
+      }
+      if (!data.known) {
+        setBeacon("off", "该配对码尚未被任何电脑使用");
+        $("device-title").textContent = "未找到已安装的电脑";
+        $("status-tag").textContent = "未绑定";
+        $("enter").disabled = true;
+        return false;
+      }
+      if (data.name) $("device-title").textContent = data.name;
+      if (data.online) {
+        setBeacon("on", "在线" + (data.lastSeenSecondsAgo != null ? " · 刚刚活跃" : ""));
+        $("status-tag").textContent = "在线";
+        $("enter").disabled = false;
+        if (autoEnter() && !joining) { joining = true; enterViewer(); }
+        return true;
+      }
+      const ago = data.lastSeenSecondsAgo ?? 0;
+      const human = ago < 90 ? `${ago} 秒前` : ago < 5400 ? `${Math.round(ago / 60)} 分钟前` : `${Math.round(ago / 3600)} 小时前`;
+      setBeacon("off", `离线 · 最后一次在线 ${human}`);
+      $("status-tag").textContent = "离线";
+      $("enter").disabled = true;
+      return false;
+    } catch {
+      setBeacon("bad", "无法连接门户，请检查网络");
+      $("enter").disabled = true;
+      return false;
+    }
+  }
+  function startPresence() {
+    clearInterval(presenceTimer);
+    $("device-title").textContent = saved?.name || "正在确认设备…";
+    $("status-tag").textContent = "探测中";
+    setBeacon("", "正在探测在线状态");
+    $("status-error").textContent = "";
+    joining = false;
+    probePresence();
+    presenceTimer = setInterval(() => {
+      if ($("status").hidden) { clearInterval(presenceTimer); presenceTimer = 0; return; }
+      probePresence();
+    }, 5000);
+  }
+
+  /* ---------------- 建立会话 ---------------- */
+  async function openSession() {
+    const code = saved.code;
+    const created = await api("/api/view", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code }),
+    });
+    intentional = false;
+    session = created;
+    token = created.token || "";
+    after = 0;
+    if (created.deviceName) savePair(code, created.deviceName);
+    return created;
+  }
+
+  async function enterViewer() {
+    if (!saved) { showPairing(); return; }
+    if (joining) return;
+    joining = true;
+    clearInterval(presenceTimer); presenceTimer = 0;
+    $("enter").disabled = true;
+    try {
+      const created = await openSession();
+      $("device-name").textContent = created.deviceName || saved.name || "RD 电脑";
+      $("pairing").hidden = true;
+      $("status").hidden = true;
+      $("viewer-shell").hidden = false;
+      $("pause").hidden = false;
+      $("resume").hidden = true;
+      resetView();
+      expiryTimer = setTimeout(() => { $("notice").hidden = true; showStatus("观看会话已过期，请重新进入。"); },
+        Math.max(0, created.expiresAt - Date.now()));
+      connectSignal();
+    } catch (error) {
+      joining = false;
+      $("enter").disabled = false;
+      $("status-error").textContent = error.message;
+      setBeacon("bad", "连接失败");
+      if (String(error.message).includes("配对码")) showPairing(error.message);
+    }
+  }
+
+  /* ---------------- 信令 ---------------- */
+  function rejectPending(error) {
+    for (const item of pending.values()) { clearTimeout(item.timer); item.reject(error); }
+    pending.clear();
+  }
   function closePeer() {
     peerGeneration++;
     negotiating = false;
     if (peer) {
-      const old = peer;
-      peer = null;
-      old.ontrack = null;
-      old.onconnectionstatechange = null;
-      old.close();
+      const old = peer; peer = null;
+      old.ontrack = null; old.onconnectionstatechange = null;
+      try { old.close(); } catch {}
     }
     $("video").srcObject = null;
-    $("video").style.display = "none";
+    view.ready = false;
   }
-
   function closeSignal() {
     signalGeneration++;
     clearTimeout(reconnectTimer);
     if (signal) {
-      const old = signal;
-      signal = null;
+      const old = signal; signal = null;
       old.onopen = old.onmessage = old.onerror = old.onclose = null;
-      old.close();
+      try { old.close(); } catch {}
     }
     if (signalReady) {
       const fail = rejectSignal;
-      signalReady = null;
-      resolveSignal = rejectSignal = null;
+      signalReady = null; resolveSignal = rejectSignal = null;
       fail?.(new Error("信令连接已关闭。"));
     }
     rejectPending(new Error("信令连接已关闭。"));
   }
 
-  function showPair(error = "") {
-    intentional = true;
-    closeSignal();
-    closePeer();
-    clearInterval(metricTimer);
-    clearTimeout(expiryTimer);
-    session = null;
-    token = "";
-    after = 0;
-    paused = false;
-    $("viewer-shell").hidden = true;
-    $("pairing").hidden = false;
-    $("error").textContent = error;
-    $("join").disabled = false;
-    $("notice").hidden = true;
-    $("code").focus();
-  }
-
-  async function join() {
-    const code = $("code").value.replace(/\D/g, "");
-    $("code").value = code;
-    if (code.length !== 30) { $("error").textContent = "请输入完整的 30 位数字配对码。"; return; }
-    $("error").textContent = "";
-    $("join").disabled = true;
-    try {
-      const created = await api("/api/view", {
-        method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({code}),
-      });
-      intentional = false;
-      session = created;
-      token = created.token || "";
-      after = 0;
-      $("code").value = "";
-      $("device-name").textContent = created.deviceName || "RD 电脑";
-      $("pairing").hidden = true;
-      $("viewer-shell").hidden = false;
-      $("pause").hidden = false;
-      $("resume").hidden = true;
-      expiryTimer = setTimeout(() => showPair("观看会话已过期，请重新连接。"), Math.max(0, created.expiresAt - Date.now()));
-      connectSignal();
-    } catch (error) {
-      $("join").disabled = false;
-      $("error").textContent = error.message;
-    }
-  }
-
   function connectSignal() {
-    if (!session || intentional) return;
+    if (!session || intentional) return Promise.resolve();
     if (signal?.readyState === WebSocket.OPEN) return Promise.resolve();
     if (signal?.readyState === WebSocket.CONNECTING) return signalReady;
     clearTimeout(reconnectTimer);
@@ -254,10 +461,8 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
     signal = socket;
     if (!peer || peer.connectionState !== "connected") setState("信令连接中…");
     signalReady = new Promise((resolve, reject) => {
-      // 注意：不能在执行器里写 signalReady.resolve —— 此时 signalReady 尚未被赋值，
-      // 会拿到旧值(null)而抛错，导致 onopen 里的 resolve 失效、认证帧永远发不出去。
-      resolveSignal = resolve;
-      rejectSignal = reject;
+      // 不能在执行器里挂到 signalReady 上：那时它还是 null，会抛出并使首个 resolve 失效。
+      resolveSignal = resolve; rejectSignal = reject;
     });
     const opened = signalReady;
     socket.onopen = () => {
@@ -265,19 +470,15 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
       reconnectFailures = 0;
       $("notice").hidden = true;
       if (signalReady) { const done = resolveSignal; signalReady = null; resolveSignal = rejectSignal = null; done?.(); }
-      // 页面与 API 跨源，浏览器不会带第三方 Cookie：首帧先发会话令牌完成认证。
-      if (token) socket.send(JSON.stringify({type:"auth", token}));
-      // 画面已连通时保持"已连接"，只处理尚未出图的阶段文案。
+      if (token) socket.send(JSON.stringify({ type: "auth", token }));
       if (!peer || peer.connectionState !== "connected") setState("信令已连接，认证中…", "ok");
       else setState("已连接", "ok");
-      sendSignal("command", {command:"status"}).then(handleStatus).catch(() => {});
+      sendSignal("command", { command: "status" }).then(handleStatus).catch(() => {});
     };
     socket.onmessage = event => {
       if (generation !== signalGeneration) return;
-      // 只在视频尚未连通时展示信令状态，避免服务端周期性轮换重连后把"已连接"覆盖掉。
       if (!signalReady && (!peer || peer.connectionState !== "connected")) setState("信令已认证", "ok");
-      let message;
-      try { message = JSON.parse(event.data); } catch { return; }
+      let message; try { message = JSON.parse(event.data); } catch { return; }
       if (Number.isSafeInteger(message.id) && message.id > after) after = message.id;
       const item = pending.get(message.requestId);
       if (!item) return;
@@ -295,62 +496,86 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
       if (signalReady) { const fail = rejectSignal; signalReady = null; resolveSignal = rejectSignal = null; fail?.(new Error("信令连接已关闭。")); }
       rejectPending(new Error("信令连接中断，请重试。"));
       if (intentional) return;
-      if (event.code === 4401) { showPair("观看会话已过期，请重新连接。"); return; }
-      // 视频走 WebRTC 直连，信令断了不影响画面。画面已连通时信令重连完全静默，
-      // 既不提示也不计数；只有还没出图时才把断开当作真正的故障处理。
+      if (event.code === 4401) { showStatus("观看会话已过期，请重新进入。"); return; }
+      // 视频走 WebRTC 直连，信令断了不影响画面；已连通时静默重连，不打扰用户。
       if (peer && peer.connectionState === "connected") {
         reconnectFailures = 0;
         setState("已连接", "ok");
         reconnectTimer = setTimeout(connectSignal, 300);
         return;
       }
-      // 服务端受 Supabase 连接寿命限制约每 50 秒轮换一次信令，网关通常不透传关闭帧，
-      // 客户端只会看到 1006。连续多次失败才提示用户。
       reconnectFailures++;
       if (reconnectFailures <= 2) {
         setState("信令重连中…");
         reconnectTimer = setTimeout(connectSignal, 300);
         return;
       }
-      setState("信令断开(代码 " + (event.code || 1006) + (event.wasClean ? "，正常关闭" : "，异常关闭") + ")，重连中");
-      notice("信令连接被断开（代码 " + (event.code || 1006) + "）。常见原因：1006/1015＝网络或代理拦截 WSS；403＝页面来源不在白名单；4401＝会话过期，请重新输入配对码。");
+      setState("信令断开(" + (event.code || 1006) + ")，重连中");
+      notice("信令连接被断开（代码 " + (event.code || 1006) + "）。1006/1015 多为网络或代理拦截 WSS。");
       reconnectTimer = setTimeout(connectSignal, 1000);
     };
     return opened;
   }
 
   async function sendSignal(type, extra = {}) {
-    if (!signal || signal.readyState !== WebSocket.OPEN) {
-      await connectSignal();
-    }
+    if (!signal || signal.readyState !== WebSocket.OPEN) await connectSignal();
     if (!signal || signal.readyState !== WebSocket.OPEN) throw new Error("信令尚未连接。");
     const requestId = crypto.randomUUID();
     return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => {
-        pending.delete(requestId);
-        reject(new Error("请求超时，请重试。"));
-      }, 15000);
-      pending.set(requestId, {resolve, reject, timer});
-      signal.send(JSON.stringify({type, sessionId:session.sessionId, requestId, ...extra}));
+      const timer = setTimeout(() => { pending.delete(requestId); reject(new Error("请求超时，请重试。")); }, 15000);
+      pending.set(requestId, { resolve, reject, timer });
+      signal.send(JSON.stringify({ type, sessionId: session.sessionId, requestId, ...extra }));
     });
   }
 
-  async function handleStatus(message) {
+  /* ---------------- 状态与协商 ---------------- */
+  function handleStatus(message) {
     const data = message.data || {};
     paused = data.paused === true;
     $("pause").hidden = paused;
     $("resume").hidden = !paused;
+
+    // 分辨率档位：设备把原生宽高和可选档位一起回传，这里按实际屏幕过滤掉无意义的高档。
+    if (Array.isArray(data.presets)) {
+      presets = data.presets;
+      const native = data.nativeWidth || 0;
+      const select = $("resolution");
+      const current = String(data.targetWidth ?? 0);
+      select.replaceChildren();
+      for (const preset of presets) {
+        if (preset !== 0 && native && preset >= native) continue;
+        const option = document.createElement("option");
+        option.value = String(preset);
+        option.textContent = preset === 0 ? `原生 ${native || ""}×${data.nativeHeight || ""}`.trim() : `${preset}px 宽`;
+        select.append(option);
+      }
+      if (![...select.options].some(option => option.value === current)) {
+        const option = document.createElement("option");
+        option.value = "0";
+        option.textContent = "原生分辨率";
+        select.prepend(option);
+      }
+      select.value = current;
+    }
+    $("encoder").value = data.requestedPreference || data.preference || "auto";
+    $("metric").title = [
+      `画面 ${data.width || "?"}×${data.height || "?"}`,
+      `原生 ${data.nativeWidth || "?"}×${data.nativeHeight || "?"}`,
+      data.capture || "",
+      data.fallbackReason || "",
+    ].filter(Boolean).join(" · ");
+
     if (paused) {
       closePeer();
       setState("已暂停");
-      overlay("观看已暂停", "采集与编码已停止。点击“恢复”继续观看。");
+      overlay("观看已暂停", "采集与编码已停止。点击工具栏“恢复”继续观看。");
       return;
     }
     if (data.mode !== "h264") {
-      overlay("当前为 JPEG 兼容模式", "固定门户需要 NVIDIA H.264 编码。JPEG 后备通道仅用于局域网直连。");
+      overlay("当前为 JPEG 兼容模式", "固定门户需要 H.264。可在工具栏把编码方式改成「自动」或「软件 H.264」，JPEG 仅用于局域网直连。");
       return;
     }
-    if (!peer || peer.connectionState === "failed" || peer.connectionState === "closed") await negotiate();
+    if (!peer || peer.connectionState === "failed" || peer.connectionState === "closed") negotiate();
   }
 
   function waitForIce(connection, timeout) {
@@ -372,18 +597,19 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
     closePeer();
     negotiating = true;
     const generation = peerGeneration;
-    const connection = new RTCPeerConnection({iceServers, iceTransportPolicy:"all"});
+    const connection = new RTCPeerConnection({ iceServers, iceTransportPolicy: "all" });
     peer = connection;
     overlay("正在连接视频", "正在协商 H.264 与 NAT 穿透…");
     setState("正在连接");
-    connection.addTransceiver("video", {direction:"recvonly"});
+    connection.addTransceiver("video", { direction: "recvonly" });
     connection.ontrack = event => {
       if (generation !== peerGeneration) return;
       $("video").srcObject = event.streams[0];
-      $("video").style.display = "block";
       $("video").playbackDelayHint = 0;
       $("video").play().catch(() => {});
       overlay("", "", false);
+      view.ready = false;
+      resetView();
     };
     connection.onconnectionstatechange = () => {
       if (generation !== peerGeneration) return;
@@ -400,9 +626,9 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
       await connection.setLocalDescription(await connection.createOffer());
       await waitForIce(connection, 2800);
       if (generation !== peerGeneration) return;
-      const answer = await sendSignal("offer", {sdp:connection.localDescription.sdp});
+      const answer = await sendSignal("offer", { sdp: connection.localDescription.sdp });
       if (generation !== peerGeneration) return;
-      await connection.setRemoteDescription({type:"answer", sdp:answer.sdp});
+      await connection.setRemoteDescription({ type: "answer", sdp: answer.sdp });
       if (generation !== peerGeneration) return;
       clearInterval(metricTimer);
       metricTimer = setInterval(updateStats, 1000);
@@ -417,30 +643,201 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
 
   async function updateStats() {
     if (!peer || peer.connectionState !== "connected") return;
-    const reports = await peer.getStats();
-    let inbound = null, pair = null;
-    reports.forEach(report => {
-      if (report.type === "inbound-rtp" && report.kind === "video") inbound = report;
-      if (report.type === "candidate-pair" && report.state === "succeeded" && report.currentRoundTripTime != null) pair = report;
-    });
-    if (!inbound) return;
-    const fps = Math.round(inbound.framesPerSecond || 0);
-    let delay = 0;
-    if (inbound.jitterBufferDelay != null && inbound.jitterBufferEmittedCount > 0)
-      delay = inbound.jitterBufferDelay / inbound.jitterBufferEmittedCount * 1000;
-    const rtt = pair ? pair.currentRoundTripTime * 1000 : 0;
-    $("metric").textContent = `${fps || "—"} fps · ≈${Math.round(delay + rtt / 2)} ms`;
+    try {
+      const reports = await peer.getStats();
+      let inbound = null, pair = null;
+      reports.forEach(report => {
+        if (report.type === "inbound-rtp" && report.kind === "video") inbound = report;
+        if (report.type === "candidate-pair" && report.state === "succeeded" && report.currentRoundTripTime != null) pair = report;
+      });
+      if (!inbound) return;
+      const fps = Math.round(inbound.framesPerSecond || 0);
+      let delay = 0;
+      if (inbound.jitterBufferDelay != null && inbound.jitterBufferEmittedCount > 0)
+        delay = inbound.jitterBufferDelay / inbound.jitterBufferEmittedCount * 1000;
+      const rtt = pair ? pair.currentRoundTripTime * 1000 : 0;
+      $("metric").textContent = `${fps || "—"} fps · ≈${Math.round(delay + rtt / 2)} ms`;
+      if (inbound.frameWidth && view.ready === false) applyLayout();
+    } catch {}
   }
 
-  async function command(name, confirmation) {
-    const response = await sendSignal("command", {command:name, confirmation});
+  // 设备重建编码器时会关掉所有观看端，这里等它重启完再主动重新协商一次。
+  function renegotiateSoon() {
+    closePeer();
+    overlay("正在重新连接视频", "编码参数已变更，正在重建视频通道…");
+    setTimeout(() => { if (!$("viewer-shell").hidden && !paused) negotiate(); }, 900);
+  }
+
+  async function command(name, extra = {}) {
+    const response = await sendSignal("command", { command: name, ...extra });
     if (!response.ok) throw new Error("RD 电脑拒绝了该操作。");
     return response.data;
   }
 
-  $("join").onclick = join;
-  $("code").addEventListener("input", () => { $("code").value = $("code").value.replace(/\D/g, "").slice(0, 30); });
-  $("code").addEventListener("keydown", event => { if (event.key === "Enter") join(); });
+  /* ---------------- 画面：比例 / 缩放 / 拖动 ---------------- */
+  const stage = $("stage"), frame = $("frame"), video = $("video");
+
+  function resetView() {
+    view.zoom = 1;
+    view.pan = { x: 0, y: 0 };
+    applyLayout();
+  }
+  function applyLayout() {
+    const vw = video.videoWidth, vh = video.videoHeight;
+    const rect = stage.getBoundingClientRect();
+    if (!vw || !vh || !rect.width || !rect.height) return;
+    // 关键：容器尺寸严格等于视频像素尺寸，缩放只由 transform 等比控制，
+    // 这样画面比例永远和真实桌面一致，不会被拉伸变形。
+    frame.style.width = vw + "px";
+    frame.style.height = vh + "px";
+    view.fit = Math.min(rect.width / vw, rect.height / vh);
+    view.ready = true;
+    render();
+  }
+  function render() {
+    const vw = video.videoWidth, vh = video.videoHeight;
+    const rect = stage.getBoundingClientRect();
+    if (!vw || !vh || !rect.width || !rect.height) return;
+    const scale = view.fit * view.zoom;
+    const width = vw * scale, height = vh * scale;
+    const maxX = Math.max(0, (width - rect.width) / 2);
+    const maxY = Math.max(0, (height - rect.height) / 2);
+    view.pan.x = Math.min(maxX, Math.max(-maxX, view.pan.x));
+    view.pan.y = Math.min(maxY, Math.max(-maxY, view.pan.y));
+    view.tx = (rect.width - width) / 2 + view.pan.x;
+    view.ty = (rect.height - height) / 2 + view.pan.y;
+    frame.style.transform = `translate(${view.tx}px, ${view.ty}px) scale(${scale})`;
+    $("zoom-readout").textContent = Math.round(view.zoom * 100) + "%";
+  }
+  function setZoom(next, anchorX, anchorY) {
+    const vw = video.videoWidth, vh = video.videoHeight;
+    const rect = stage.getBoundingClientRect();
+    if (!vw || !vh) return;
+    const clamped = Math.min(8, Math.max(1, next));
+    if (clamped === view.zoom) return;
+    const scale0 = view.fit * view.zoom;
+    const cx = anchorX ?? rect.width / 2;
+    const cy = anchorY ?? rect.height / 2;
+    const px = (cx - view.tx) / scale0;
+    const py = (cy - view.ty) / scale0;
+    view.zoom = clamped;
+    const scale1 = view.fit * view.zoom;
+    const baseX = (rect.width - vw * scale1) / 2;
+    const baseY = (rect.height - vh * scale1) / 2;
+    view.pan.x = cx - px * scale1 - baseX;
+    view.pan.y = cy - py * scale1 - baseY;
+    render();
+  }
+  function setZoomMode(mode) {
+    const vw = video.videoWidth, vh = video.videoHeight;
+    const rect = stage.getBoundingClientRect();
+    if (!vw || !vh) return;
+    view.pan = { x: 0, y: 0 };
+    if (mode === "fit") view.zoom = 1;
+    else if (mode === "cover") view.zoom = Math.max(rect.width / vw, rect.height / vh) / view.fit;
+    else view.zoom = 1 / view.fit;
+    view.zoom = Math.min(8, Math.max(1, view.zoom));
+    render();
+  }
+
+  let drag = null;
+  stage.addEventListener("contextmenu", event => event.preventDefault());
+  stage.addEventListener("pointerdown", event => {
+    if (event.button !== 2 && event.button !== 1) return;
+    event.preventDefault();
+    drag = { x: event.clientX, y: event.clientY, panX: view.pan.x, panY: view.pan.y, id: event.pointerId };
+    stage.setPointerCapture(event.pointerId);
+    stage.classList.add("dragging");
+  });
+  stage.addEventListener("pointermove", event => {
+    if (!drag || event.pointerId !== drag.id) return;
+    view.pan.x = drag.panX + (event.clientX - drag.x);
+    view.pan.y = drag.panY + (event.clientY - drag.y);
+    render();
+  });
+  function endDrag(event) {
+    if (!drag) return;
+    if (event && event.pointerId !== undefined && event.pointerId !== drag.id) return;
+    try { stage.releasePointerCapture(drag.id); } catch {}
+    drag = null;
+    stage.classList.remove("dragging");
+  }
+  stage.addEventListener("pointerup", endDrag);
+  stage.addEventListener("pointercancel", endDrag);
+  stage.addEventListener("wheel", event => {
+    if (!video.videoWidth) return;
+    event.preventDefault();
+    const rect = stage.getBoundingClientRect();
+    const factor = Math.exp(-event.deltaY * 0.0018);
+    setZoom(view.zoom * factor, event.clientX - rect.left, event.clientY - rect.top);
+  }, { passive: false });
+
+  window.addEventListener("resize", () => { if (!$("viewer-shell").hidden) applyLayout(); });
+  document.addEventListener("fullscreenchange", () => applyLayout());
+
+  /* ---------------- 事件绑定 ---------------- */
+  $("join").onclick = async () => {
+    const code = $("code").value.toUpperCase().replace(/[^0-9A-Z]/g, "");
+    $("code").value = code;
+    if (code.length !== 30) { $("pair-error").textContent = "请输入完整的 30 位配对码（数字或大写字母）。"; return; }
+    $("pair-error").textContent = "";
+    $("join").disabled = true;
+    try {
+      const created = await api("/api/view", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code }),
+      });
+      savePair(code, created.deviceName || "");
+      token = created.token || "";
+      session = created;
+      intentional = false;
+      after = 0;
+      $("device-name").textContent = created.deviceName || "RD 电脑";
+      $("pairing").hidden = true;
+      $("status").hidden = true;
+      $("viewer-shell").hidden = false;
+      $("pause").hidden = false;
+      $("resume").hidden = true;
+      resetView();
+      expiryTimer = setTimeout(() => showStatus("观看会话已过期，请重新进入。"), Math.max(0, created.expiresAt - Date.now()));
+      connectSignal();
+    } catch (error) {
+      $("join").disabled = false;
+      $("pair-error").textContent = error.message;
+    }
+  };
+  $("code").addEventListener("input", () => {
+    const caret = $("code").selectionStart;
+    $("code").value = $("code").value.toUpperCase().replace(/[^0-9A-Z ]/g, "").slice(0, 36);
+    if (caret !== null) $("code").setSelectionRange(caret, caret);
+  });
+  $("code").addEventListener("keydown", event => { if (event.key === "Enter") $("join").click(); });
+
+  $("enter").onclick = enterViewer;
+  $("probe").onclick = () => { $("status-error").textContent = ""; probePresence(); };
+  $("forget").onclick = () => { forgetPair(); showPairing(); };
+  $("auto-enter").onchange = event => {
+    try { localStorage.setItem(STORE_KEY + ".auto", event.target.checked ? "1" : "0"); } catch {}
+  };
+
+  $("zoom-in").onclick = () => setZoom(view.zoom * 1.25);
+  $("zoom-out").onclick = () => setZoom(view.zoom / 1.25);
+  $("zoom-fit").onclick = () => setZoomMode("fit");
+  $("zoom-cover").onclick = () => setZoomMode("cover");
+  $("resolution").onchange = async event => {
+    const width = Number(event.target.value);
+    try {
+      await command("resolution", { width });
+      notice(width === 0 ? "已切回原生分辨率。" : `已切换到 ${width}px 宽档位，画面正在重连。`);
+      renegotiateSoon();
+    } catch (error) { notice(error.message, true); }
+  };
+  $("encoder").onchange = async event => {
+    try {
+      await command("encoder", { mode: event.target.value });
+      notice("已请求切换编码方式，画面会短暂重连。");
+      renegotiateSoon();
+    } catch (error) { notice(error.message, true); }
+  };
   $("sync").onclick = async () => {
     try { await command("keyframe"); notice("已请求关键帧同步。"); } catch (error) { notice(error.message, true); }
   };
@@ -448,10 +845,8 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
     try {
       await command("pause");
       paused = true;
-      $("pause").hidden = true;
-      $("resume").hidden = false;
-      closePeer();
-      setState("已暂停");
+      $("pause").hidden = true; $("resume").hidden = false;
+      closePeer(); setState("已暂停");
       overlay("观看已暂停", "采集与编码已停止。点击“恢复”继续观看。");
     } catch (error) { notice(error.message, true); }
   };
@@ -459,8 +854,7 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
     try {
       await command("resume");
       paused = false;
-      $("pause").hidden = false;
-      $("resume").hidden = true;
+      $("pause").hidden = false; $("resume").hidden = true;
       await negotiate();
     } catch (error) { notice(error.message, true); }
   };
@@ -468,18 +862,20 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
     if (!confirm("将停止并彻底卸载 RD，同时清理开机自启、看门狗和防火墙规则。确定继续吗？")) return;
     const confirmation = prompt("请输入“卸载RD”确认卸载。");
     if (confirmation !== "卸载RD") return;
-    try {
-      await command("uninstall", confirmation);
-      showPair("RD 正在卸载。");
-    } catch (error) { notice(error.message, true); }
+    try { await command("uninstall", { confirmation }); showStatus("RD 正在卸载，稍后请换一个配对码。"); }
+    catch (error) { notice(error.message, true); }
   };
   $("leave").onclick = async () => {
-    if (signal?.readyState === WebSocket.OPEN) {
-      try { signal.send(JSON.stringify({type:"bye", sessionId:session.sessionId, requestId:crypto.randomUUID()})); } catch {}
+    if (session && signal?.readyState === WebSocket.OPEN) {
+      try { signal.send(JSON.stringify({ type: "bye", sessionId: session.sessionId, requestId: crypto.randomUUID() })); } catch {}
     }
-    try { await api("/api/view/revoke?sessionId=" + encodeURIComponent(session.sessionId), {method:"POST"}); } catch {}
-    showPair();
+    try { if (session) await api("/api/view/revoke?sessionId=" + encodeURIComponent(session.sessionId), { method: "POST" }); } catch {}
+    showStatus();
   };
+
+  /* ---------------- 启动 ---------------- */
+  if (saved) showStatus();
+  else showPairing();
 })();
 </script>
 </body>
