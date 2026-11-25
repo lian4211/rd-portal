@@ -267,7 +267,8 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
       if (signalReady) { const done = resolveSignal; signalReady = null; resolveSignal = rejectSignal = null; done?.(); }
       // 页面与 API 跨源，浏览器不会带第三方 Cookie：首帧先发会话令牌完成认证。
       if (token) socket.send(JSON.stringify({type:"auth", token}));
-      setState("信令已连接，认证中…", "ok");
+      // 画面已连通时不要退回信令阶段文案（服务端每约 50 秒轮换一次信令）。
+      if (!peer || peer.connectionState !== "connected") setState("信令已连接，认证中…", "ok");
       sendSignal("command", {command:"status"}).then(handleStatus).catch(() => {});
     };
     socket.onmessage = event => {
