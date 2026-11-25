@@ -296,11 +296,19 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
       rejectPending(new Error("信令连接中断，请重试。"));
       if (intentional) return;
       if (event.code === 4401) { showPair("观看会话已过期，请重新连接。"); return; }
-      // 服务端受 Supabase 连接寿命限制，约每 50 秒轮换一次信令；网关通常不透传关闭帧，
-      // 客户端只会看到 1006。这类定期轮换必须静默处理，连续多次失败才提示用户。
+      // 视频走 WebRTC 直连，信令断了不影响画面。画面已连通时信令重连完全静默，
+      // 既不提示也不计数；只有还没出图时才把断开当作真正的故障处理。
+      if (peer && peer.connectionState === "connected") {
+        reconnectFailures = 0;
+        setState("已连接", "ok");
+        reconnectTimer = setTimeout(connectSignal, 300);
+        return;
+      }
+      // 服务端受 Supabase 连接寿命限制约每 50 秒轮换一次信令，网关通常不透传关闭帧，
+      // 客户端只会看到 1006。连续多次失败才提示用户。
       reconnectFailures++;
       if (reconnectFailures <= 2) {
-        if (!peer || peer.connectionState !== "connected") setState("信令重连中…");
+        setState("信令重连中…");
         reconnectTimer = setTimeout(connectSignal, 300);
         return;
       }
