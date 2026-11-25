@@ -250,6 +250,7 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
     url.searchParams.set("after", String(after));
     const socket = new WebSocket(url);
     signal = socket;
+    setState("信令连接中…");
     signalReady = new Promise((resolve, reject) => {
       signalReady.resolve = resolve;
       signalReady.reject = reject;
@@ -257,14 +258,15 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
     const opened = signalReady;
     socket.onopen = () => {
       if (generation !== signalGeneration) { socket.close(); return; }
-      if (signalReady) signalReady.resolve();
+      if (signalReady) { signalReady.resolve(); signalReady = null; }
       // 页面与 API 跨源，浏览器不会带第三方 Cookie：首帧先发会话令牌完成认证。
       if (token) socket.send(JSON.stringify({type:"auth", token}));
-      setState("信令已连接", "ok");
+      setState("信令已连接，认证中…", "ok");
       sendSignal("command", {command:"status"}).then(handleStatus).catch(() => {});
     };
     socket.onmessage = event => {
       if (generation !== signalGeneration) return;
+      if (!signalReady) setState("信令已认证", "ok");
       let message;
       try { message = JSON.parse(event.data); } catch { return; }
       if (Number.isSafeInteger(message.id) && message.id > after) after = message.id;
@@ -285,7 +287,7 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
       rejectPending(new Error("信令连接中断，请重试。"));
       if (intentional) return;
       if (event.code === 4401) { showPair("观看会话已过期，请重新连接。"); return; }
-      setState("信令断开(" + (event.code || 1006) + ")，重连中");
+      setState("信令断开(代码 " + (event.code || 1006) + (event.wasClean ? "，正常关闭" : "，异常关闭") + ")，重连中");
       notice("信付认连被断开（代码 " + (event.code || 1006) + "）。常见原因：1006/1015＝网络或代理拦截 WSS；403＝页面来源不在白名单；4401＝会话过期，请重新输入配对码。");
       reconnectTimer = setTimeout(connectSignal, 1000);
     };
