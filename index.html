@@ -103,7 +103,8 @@ select.mini{height:30px;padding:0 6px;border:1px solid var(--line);border-radius
   background:#081310f2;text-align:center;backdrop-filter:blur(10px);box-shadow:0 20px 60px #000a}
 #overlay-title{font-weight:720;font-size:15px}
 #overlay-copy{color:var(--muted);font-size:12.5px;line-height:1.55}
-#zoom-hint{position:absolute;left:12px;bottom:10px;z-index:2;color:#4d6b62;font-size:11px;pointer-events:none;transition:opacity .3s}
+#zoom-hint{position:absolute;left:12px;bottom:10px;z-index:2;color:#4d6b62;font-size:11px;pointer-events:none;animation:hint-fade 9s forwards}
+@keyframes hint-fade{0%,72%{opacity:1}100%{opacity:0}}
 #notice{position:fixed;z-index:6;left:50%;bottom:26px;transform:translateX(-50%);max-width:min(620px,92vw);
   padding:11px 15px;border:1px solid var(--line);border-radius:12px;background:#0f1e1af7;color:#d7e9e1;
   font-size:12.5px;line-height:1.5;text-align:center;box-shadow:0 14px 44px #000a}
@@ -746,7 +747,7 @@ select.mini{height:30px;padding:0 6px;border:1px solid var(--line);border-radius
     if (event.button !== 2 && event.button !== 1) return;
     event.preventDefault();
     drag = { x: event.clientX, y: event.clientY, panX: view.pan.x, panY: view.pan.y, id: event.pointerId };
-    stage.setPointerCapture(event.pointerId);
+    try { stage.setPointerCapture(event.pointerId); } catch {}
     stage.classList.add("dragging");
   });
   stage.addEventListener("pointermove", event => {
