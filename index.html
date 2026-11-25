@@ -177,7 +177,7 @@ select.mini{height:30px;padding:0 6px;border:1px solid var(--line);border-radius
       <option value="auto">自动选择编码</option>
       <option value="nvenc">NVENC 硬件</option>
       <option value="software">软件 H.264</option>
-      <option value="jpeg">JPEG 兼容</option>
+      <option value="jpeg" disabled>JPEG 兼容（仅局域网）</option>
     </select>
     <div class="group" id="zoom-group">
       <button id="zoom-out" title="缩小" aria-label="缩小">−</button>
@@ -272,6 +272,29 @@ select.mini{height:30px;padding:0 6px;border:1px solid var(--line);border-radius
     }
     $("notice").hidden = false;
   }
+  // JPEG 模式下门户无法出画面（视频轨道只协商了 H.264）。给一个一键切回「自动」的出口，
+  // 否则用户只能卡在黑屏 + 提示里自己找下拉框。
+  function offerJpegRecovery() {
+    const box = $("notice");
+    if (box.querySelector("[data-jpeg-recovery]")) return;
+    notice("门户只承载 H.264，当前编码方式无法出画面。");
+    const button = document.createElement("button");
+    button.dataset.jpegRecovery = "1";
+    button.textContent = "切回自动并重连";
+    button.onclick = async () => {
+      try {
+        await command("encoder", { mode: "auto" });
+        $("encoder").value = "auto";
+        notice("已切回自动编码，正在重连…");
+        renegotiateSoon();
+      } catch (error) {
+        notice(error.message, true);
+      }
+    };
+    box.append(button);
+    box.hidden = false;
+  }
+
   async function api(path, options = {}) {
     const { headers = {}, ...rest } = options;
     const response = await fetch(API + path, { cache: "no-store", credentials: "omit", ...rest,
@@ -573,7 +596,8 @@ select.mini{height:30px;padding:0 6px;border:1px solid var(--line);border-radius
       return;
     }
     if (data.mode !== "h264") {
-      overlay("当前为 JPEG 兼容模式", "固定门户需要 H.264。可在工具栏把编码方式改成「自动」或「软件 H.264」，JPEG 仅用于局域网直连。");
+      overlay("当前为 JPEG 兼容模式", "门户的视频通道只承载 H.264，JPEG 帧无法经门户传输。点下方「切回自动」即可恢复画面；若确实要用 JPEG，只能在被控端本机打开 http://127.0.0.1:7070 走局域网直连。");
+      offerJpegRecovery();
       return;
     }
     if (!peer || peer.connectionState === "failed" || peer.connectionState === "closed") negotiate();
