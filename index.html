@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08110f">
+<meta name="description" content="RD 固定桌面观看门户。仅观看桌面，不提供远程控制。">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://kxzpdaitklldbxtuzcri.supabase.co wss://kxzpdaitklldbxtuzcri.supabase.co; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'>
+<title>RD · 固定桌面观看门户</title>
+<style>
+:root{
+  color-scheme:dark;
+  --site-bg:#08110f;--site-fg:#edf7f2;--site-accent:#71e2bd;--site-on-accent:#07130f;
+  --site-surface:#101d19;--site-muted:#91aaa0;--site-border:#263b33;
+  --site-font:Inter,"Segoe UI","Microsoft YaHei",system-ui,sans-serif;
+  --site-radius:18px;--site-space:1;--site-type:1;--site-motion:1;
+  --line:var(--site-border);--muted:var(--site-muted);--danger:#ff9daf;
+  --space:calc(4px * var(--site-space));--duration:calc(160ms * var(--site-motion));
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--site-bg);color:var(--site-fg);font-family:var(--site-font);font-size:calc(16px * var(--site-type))}
+body{min-height:100vh;min-height:100dvh}
+button,input{font:inherit}
+button{cursor:pointer;transition:background var(--duration),border-color var(--duration),transform var(--duration)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--site-accent);outline-offset:3px}
+[hidden]{display:none!important}
+#pairing{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:calc(24px * var(--site-space));background:radial-gradient(circle at 50% 0%,#18372c 0,transparent 52%)}
+#pairing-card{width:min(470px,100%);padding:calc(34px * var(--site-space));border:1px solid var(--line);border-radius:var(--site-radius);background:color-mix(in srgb,var(--site-surface) 94%,transparent);box-shadow:0 30px 100px #0007}
+.brand{display:flex;align-items:center;gap:calc(12px * var(--site-space));margin-bottom:calc(30px * var(--site-space))}
+.mark{display:grid;place-items:center;width:46px;height:46px;border-radius:calc(var(--site-radius) * .65);background:var(--site-accent);color:var(--site-on-accent);font-weight:850;letter-spacing:-1px}
+.brand-name{font-size:calc(20px * var(--site-type));font-weight:780;letter-spacing:-.3px}
+.brand-sub{color:var(--muted);font-size:calc(12px * var(--site-type));margin-top:3px}
+.badge{margin-left:auto;padding:6px 9px;border:1px solid var(--line);border-radius:999px;color:var(--site-accent);font-size:calc(11px * var(--site-type));white-space:nowrap}
+h1{margin:0 0 calc(10px * var(--site-space));font-size:calc(29px * var(--site-type));letter-spacing:-.8px}
+.lead{margin:0 0 calc(26px * var(--site-space));color:var(--muted);font-size:calc(14px * var(--site-type));line-height:1.65}
+label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;font-size:calc(13px * var(--site-type))}
+#code{width:100%;height:58px;padding:0 12px;border:1px solid #385348;border-radius:calc(var(--site-radius) * .7);background:#09120f;color:var(--site-fg);text-align:center;font-family:"Cascadia Mono",Consolas,monospace;font-size:calc(19px * var(--site-type));letter-spacing:3px}
+#code::placeholder{color:#587067;font-family:var(--site-font);font-size:calc(13px * var(--site-type));letter-spacing:0}
+.primary{width:100%;height:48px;margin-top:calc(16px * var(--site-space));border:0;border-radius:calc(var(--site-radius) * .65);background:var(--site-accent);color:var(--site-on-accent);font-weight:760}
+.primary:hover{filter:brightness(1.05)}
+.primary:disabled{opacity:.55;cursor:wait}
+#error{min-height:calc(22px * var(--site-space));margin-top:calc(10px * var(--site-space));color:var(--danger);font-size:calc(13px * var(--site-type));line-height:1.5}
+.rules{display:grid;gap:calc(9px * var(--site-space));margin-top:calc(22px * var(--site-space));padding-top:calc(20px * var(--site-space));border-top:1px solid var(--line)}
+.rule{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:calc(12px * var(--site-type))}
+.check{display:grid;place-items:center;width:17px;height:17px;border:1px solid #385348;border-radius:50%;color:var(--site-accent);font-size:10px}
+#viewer-shell{position:fixed;inset:0;display:grid;grid-template-rows:auto 1fr;background:#030605}
+#toolbar{z-index:3;display:flex;align-items:center;gap:calc(8px * var(--site-space));padding:calc(12px * var(--site-space)) calc(16px * var(--site-space));border-bottom:1px solid var(--line);background:#0a1310ee;backdrop-filter:blur(14px)}
+#device-name{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;font-size:calc(14px * var(--site-type))}
+.pill{display:flex;align-items:center;gap:7px;min-height:32px;padding:0 10px;border:1px solid var(--line);border-radius:999px;background:#101d19;color:#c5d8cf;font-size:calc(11px * var(--site-type));white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:#f6c76c}
+.dot.ok{background:var(--site-accent)}.dot.bad{background:var(--danger)}
+.spacer{flex:1}
+.action{height:34px;padding:0 12px;border:1px solid #344d42;border-radius:9px;background:#101d19;color:var(--site-fg);font-size:calc(12px * var(--site-type))}
+.action:hover{border-color:#5a7a6c;background:#172821}
+.action.danger{color:#ffd5de;border-color:#67404a}
+#stage{position:relative;min-height:0;display:grid;place-items:center;overflow:hidden;background:#020403}
+#video{width:100%;height:100%;object-fit:contain;display:none}
+#overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:12px;width:min(420px,90%);padding:24px;border:1px solid var(--line);border-radius:var(--site-radius);background:#0a1310ee;text-align:center}
+#overlay-title{font-weight:720;font-size:calc(16px * var(--site-type))}
+#overlay-copy{color:var(--muted);font-size:calc(13px * var(--site-type));line-height:1.55}
+#notice{position:fixed;z-index:5;left:50%;bottom:28px;transform:translateX(-50%);max-width:min(600px,90vw);padding:12px 16px;border:1px solid var(--line);border-radius:12px;background:#101d19f5;color:#dbe9e2;font-size:calc(13px * var(--site-type));line-height:1.5;text-align:center;box-shadow:0 12px 40px #0008}
+#notice button{margin-left:10px;padding:5px 9px;border:0;border-radius:7px;background:var(--site-accent);color:var(--site-on-accent)}
+@media(max-width:760px){#pairing{padding:16px}#pairing-card{padding:25px}.badge{display:none}#toolbar{flex-wrap:wrap}.pill.stats{display:none}#device-name{max-width:120px}.action{padding:0 9px}#viewer-shell{grid-template-rows:auto 1fr}}
+@media(prefers-reduced-motion:reduce){button{transition:none}}
+</style>
+</head>
+<body>
+<section id="pairing" aria-labelledby="title">
+  <div id="pairing-card">
+    <div class="brand"><div class="mark">RD</div><div><div class="brand-name">RD 桌面观看</div><div class="brand-sub">一个地址，连接你的电脑</div></div><span class="badge">固定门户</span></div>
+    <h1 id="title">输入配对码</h1>
+    <p class="lead">使用被控电脑安装时生成的永久 30 位配对码。连接后仅观看桌面，并可暂停、恢复或卸载 RD 服务。</p>
+    <label for="code">永久配对码</label>
+    <input id="code" inputmode="numeric" autocomplete="off" autocapitalize="off" maxlength="30" pattern="[0-9]{30}" placeholder="输入 30 位数字" aria-describedby="error">
+    <button id="join" class="primary">连接桌面</button>
+    <div id="error" role="status" aria-live="polite"></div>
+    <div class="rules">
+      <div class="rule"><span class="check">✓</span><span>配对码永久固定，不会自动更换</span></div>
+      <div class="rule"><span class="check">✓</span><span>固定信令地址，视频走 WebRTC 点对点</span></div>
+      <div class="rule"><span class="check">✓</span><span>不提供鼠标、键盘或桌面远程控制</span></div>
+    </div>
+  </div>
+</section>
+
+<main id="viewer-shell" hidden aria-label="RD 桌面观看">
+  <header id="toolbar">
+    <span id="device-name">RD 电脑</span>
+    <span class="pill"><span class="dot" id="dot"></span><span id="state">正在连接</span></span>
+    <span class="pill stats" id="metric">—</span>
+    <span class="spacer"></span>
+    <button class="action" id="sync">重新同步</button>
+    <button class="action" id="pause">暂停</button>
+    <button class="action" id="resume" hidden>恢复</button>
+    <button class="action danger" id="uninstall">卸载</button>
+    <button class="action" id="leave">断开</button>
+  </header>
+  <div id="stage">
+    <video id="video" autoplay muted playsinline></video>
+    <div id="overlay"><div id="overlay-title">正在连接</div><div id="overlay-copy">正在与 RD 电脑建立加密视频通道…</div></div>
+  </div>
+</main>
+<div id="notice" role="alert" hidden></div>
+
+<script>
+(() => {
+  "use strict";
+  const API_ORIGIN = "https://kxzpdaitklldbxtuzcri.supabase.co";
+  const API = API_ORIGIN + "/functions/v1/app";
+  const $ = id => document.getElementById(id);
+  const iceServers = [{urls:["stun:stun.l.google.com:19302","stun:stun.cloudflare.com:3478"]}];
+  let session = null, token = "", signal = null, peer = null;
+  let signalGeneration = 0, peerGeneration = 0, after = 0, intentional = false;
+  let reconnectTimer = 0, expiryTimer = 0, metricTimer = 0, negotiating = false, paused = false;
+  let signalReady = null, pending = new Map();
+
+  const messages = {
+    invalid_code:"配对码不正确。",
+    device_offline:"RD 电脑当前离线，请确认它已开机并联网。",
+    rate_limited:"尝试过于频繁，请稍后再试。",
+    session_expired:"观看会话已过期，请重新输入配对码。",
+    service_unavailable:"门户服务暂时不可用，请稍后重试。",
+  };
+
+  function setState(text, kind = "") {
+    $("state").textContent = text;
+    $("dot").className = "dot" + (kind ? " " + kind : "");
+  }
+
+  function overlay(title, copy, visible = true) {
+    $("overlay").hidden = !visible;
+    $("overlay-title").textContent = title;
+    $("overlay-copy").textContent = copy;
+  }
+
+  function notice(text, retry = false) {
+    $("notice").replaceChildren(document.createTextNode(text));
+    if (retry) {
+      const button = document.createElement("button");
+      button.textContent = "重试";
+      button.onclick = () => { $("notice").hidden = true; connectSignal(); };
+      $("notice").append(button);
+    }
+    $("notice").hidden = false;
+  }
+
+  async function api(path, options = {}) {
+    const {headers = {}, ...rest} = options;
+    const response = await fetch(API + path, {cache:"no-store", credentials:"omit", ...rest,
+      headers:{...(token ? {Authorization:"Bearer " + token} : {}), ...headers}});
+    let data = null;
+    try { data = await response.json(); } catch {}
+    if (!response.ok) throw new Error(messages[data?.error] || `请求失败（${response.status}）。`);
+    return data;
+  }
+
+  function rejectPending(error) {
+    for (const item of pending.values()) {
+      clearTimeout(item.timer);
+      item.reject(error);
+    }
+    pending.clear();
+  }
+
+  function closePeer() {
+    peerGeneration++;
+    negotiating = false;
+    if (peer) {
+      const old = peer;
+      peer = null;
+      old.ontrack = null;
+      old.onconnectionstatechange = null;
+      old.close();
+    }
+    $("video").srcObject = null;
+    $("video").style.display = "none";
+  }
+
+  function closeSignal() {
+    signalGeneration++;
+    clearTimeout(reconnectTimer);
+    if (signal) {
+      const old = signal;
+      signal = null;
+      old.onopen = old.onmessage = old.onerror = old.onclose = null;
+      old.close();
+    }
+    if (signalReady) {
+      const current = signalReady;
+      signalReady = null;
+      current.reject(new Error("信令连接已关闭。"));
+    }
+    rejectPending(new Error("信令连接已关闭。"));
+  }
+
+  function showPair(error = "") {
+    intentional = true;
+    closeSignal();
+    closePeer();
+    clearInterval(metricTimer);
+    clearTimeout(expiryTimer);
+    session = null;
+    token = "";
+    after = 0;
+    paused = false;
+    $("viewer-shell").hidden = true;
+    $("pairing").hidden = false;
+    $("error").textContent = error;
+    $("join").disabled = false;
+    $("notice").hidden = true;
+    $("code").focus();
+  }
+
+  async function join() {
+    const code = $("code").value.replace(/\D/g, "");
+    $("code").value = code;
+    if (code.length !== 30) { $("error").textContent = "请输入完整的 30 位数字配对码。"; return; }
+    $("error").textContent = "";
+    $("join").disabled = true;
+    try {
+      const created = await api("/api/view", {
+        method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({code}),
+      });
+      intentional = false;
+      session = created;
+      token = created.token || "";
+      after = 0;
+      $("code").value = "";
+      $("device-name").textContent = created.deviceName || "RD 电脑";
+      $("pairing").hidden = true;
+      $("viewer-shell").hidden = false;
+      $("pause").hidden = false;
+      $("resume").hidden = true;
+      expiryTimer = setTimeout(() => showPair("观看会话已过期，请重新连接。"), Math.max(0, created.expiresAt - Date.now()));
+      connectSignal();
+    } catch (error) {
+      $("join").disabled = false;
+      $("error").textContent = error.message;
+    }
+  }
+
+  function connectSignal() {
+    if (!session || intentional) return;
+    if (signal?.readyState === WebSocket.OPEN) return Promise.resolve();
+    if (signal?.readyState === WebSocket.CONNECTING) return signalReady;
+    clearTimeout(reconnectTimer);
+    const generation = ++signalGeneration;
+    const url = new URL(API + "/api/view/ws", location.href);
+    url.protocol = location.protocol === "https:" ? "wss:" : "ws:";
+    url.searchParams.set("sessionId", session.sessionId);
+    url.searchParams.set("after", String(after));
+    const socket = new WebSocket(url);
+    signal = socket;
+    signalReady = new Promise((resolve, reject) => {
+      signalReady.resolve = resolve;
+      signalReady.reject = reject;
+    });
+    const opened = signalReady;
+    socket.onopen = () => {
+      if (generation !== signalGeneration) { socket.close(); return; }
+      if (signalReady) signalReady.resolve();
+      // 页面与 API 跨源，浏览器不会带第三方 Cookie：首帧先发会话令牌完成认证。
+      if (token) socket.send(JSON.stringify({type:"auth", token}));
+      setState("信令已连接", "ok");
+      sendSignal("command", {command:"status"}).then(handleStatus).catch(() => {});
+    };
+    socket.onmessage = event => {
+      if (generation !== signalGeneration) return;
+      let message;
+      try { message = JSON.parse(event.data); } catch { return; }
+      if (Number.isSafeInteger(message.id) && message.id > after) after = message.id;
+      const item = pending.get(message.requestId);
+      if (!item) return;
+      pending.delete(message.requestId);
+      clearTimeout(item.timer);
+      if (message.type === "error") item.reject(new Error("RD 电脑未能完成请求，请重试。"));
+      else item.resolve(message);
+    };
+    socket.onerror = () => {
+      if (generation !== signalGeneration) return;
+      if (signalReady) { signalReady.reject(new Error("信令连接失败。")); signalReady = null; }
+    };
+    socket.onclose = event => {
+      if (generation !== signalGeneration) return;
+      if (signalReady) { signalReady.reject(new Error("信令连接已关闭。")); signalReady = null; }
+      rejectPending(new Error("信令连接中断，请重试。"));
+      if (intentional) return;
+      if (event.code === 4401) { showPair("观看会话已过期，请重新连接。"); return; }
+      setState("信令重连中");
+      reconnectTimer = setTimeout(connectSignal, 1000);
+    };
+    return opened;
+  }
+
+  async function sendSignal(type, extra = {}) {
+    if (!signal || signal.readyState !== WebSocket.OPEN) {
+      await connectSignal();
+    }
+    if (!signal || signal.readyState !== WebSocket.OPEN) throw new Error("信令尚未连接。");
+    const requestId = crypto.randomUUID();
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        pending.delete(requestId);
+        reject(new Error("请求超时，请重试。"));
+      }, 15000);
+      pending.set(requestId, {resolve, reject, timer});
+      signal.send(JSON.stringify({type, sessionId:session.sessionId, requestId, ...extra}));
+    });
+  }
+
+  async function handleStatus(message) {
+    const data = message.data || {};
+    paused = data.paused === true;
+    $("pause").hidden = paused;
+    $("resume").hidden = !paused;
+    if (paused) {
+      closePeer();
+      setState("已暂停");
+      overlay("观看已暂停", "采集与编码已停止。点击“恢复”继续观看。");
+      return;
+    }
+    if (data.mode !== "h264") {
+      overlay("当前为 JPEG 兼容模式", "固定门户需要 NVIDIA H.264 编码。JPEG 后备通道仅用于局域网直连。");
+      return;
+    }
+    if (!peer || peer.connectionState === "failed" || peer.connectionState === "closed") await negotiate();
+  }
+
+  function waitForIce(connection, timeout) {
+    if (connection.iceGatheringState === "complete") return Promise.resolve();
+    return new Promise(resolve => {
+      const timer = setTimeout(done, timeout);
+      function done() {
+        clearTimeout(timer);
+        connection.removeEventListener("icegatheringstatechange", check);
+        resolve();
+      }
+      function check() { if (connection.iceGatheringState === "complete") done(); }
+      connection.addEventListener("icegatheringstatechange", check);
+    });
+  }
+
+  async function negotiate() {
+    if (negotiating || paused) return;
+    closePeer();
+    negotiating = true;
+    const generation = peerGeneration;
+    const connection = new RTCPeerConnection({iceServers, iceTransportPolicy:"all"});
+    peer = connection;
+    overlay("正在连接视频", "正在协商 H.264 与 NAT 穿透…");
+    setState("正在连接");
+    connection.addTransceiver("video", {direction:"recvonly"});
+    connection.ontrack = event => {
+      if (generation !== peerGeneration) return;
+      $("video").srcObject = event.streams[0];
+      $("video").style.display = "block";
+      $("video").playbackDelayHint = 0;
+      $("video").play().catch(() => {});
+      overlay("", "", false);
+    };
+    connection.onconnectionstatechange = () => {
+      if (generation !== peerGeneration) return;
+      const state = connection.connectionState;
+      if (state === "connected") { setState("已连接", "ok"); $("notice").hidden = true; }
+      else if (state === "connecting") setState("正在连接");
+      else if (state === "disconnected") setState("正在恢复");
+      else if (state === "failed") {
+        setState("连接失败", "bad");
+        overlay("视频连接失败", "局域网或 Tailscale 可直接连接；严格对称 NAT 可能需要 TURN。", true);
+      }
+    };
+    try {
+      await connection.setLocalDescription(await connection.createOffer());
+      await waitForIce(connection, 2800);
+      if (generation !== peerGeneration) return;
+      const answer = await sendSignal("offer", {sdp:connection.localDescription.sdp});
+      if (generation !== peerGeneration) return;
+      await connection.setRemoteDescription({type:"answer", sdp:answer.sdp});
+      if (generation !== peerGeneration) return;
+      clearInterval(metricTimer);
+      metricTimer = setInterval(updateStats, 1000);
+    } catch (error) {
+      if (generation !== peerGeneration) return;
+      setState("连接失败", "bad");
+      overlay("无法建立视频通道", error.message, true);
+    } finally {
+      if (generation === peerGeneration) negotiating = false;
+    }
+  }
+
+  async function updateStats() {
+    if (!peer || peer.connectionState !== "connected") return;
+    const reports = await peer.getStats();
+    let inbound = null, pair = null;
+    reports.forEach(report => {
+      if (report.type === "inbound-rtp" && report.kind === "video") inbound = report;
+      if (report.type === "candidate-pair" && report.state === "succeeded" && report.currentRoundTripTime != null) pair = report;
+    });
+    if (!inbound) return;
+    const fps = Math.round(inbound.framesPerSecond || 0);
+    let delay = 0;
+    if (inbound.jitterBufferDelay != null && inbound.jitterBufferEmittedCount > 0)
+      delay = inbound.jitterBufferDelay / inbound.jitterBufferEmittedCount * 1000;
+    const rtt = pair ? pair.currentRoundTripTime * 1000 : 0;
+    $("metric").textContent = `${fps || "—"} fps · ≈${Math.round(delay + rtt / 2)} ms`;
+  }
+
+  async function command(name, confirmation) {
+    const response = await sendSignal("command", {command:name, confirmation});
+    if (!response.ok) throw new Error("RD 电脑拒绝了该操作。");
+    return response.data;
+  }
+
+  $("join").onclick = join;
+  $("code").addEventListener("input", () => { $("code").value = $("code").value.replace(/\D/g, "").slice(0, 30); });
+  $("code").addEventListener("keydown", event => { if (event.key === "Enter") join(); });
+  $("sync").onclick = async () => {
+    try { await command("keyframe"); notice("已请求关键帧同步。"); } catch (error) { notice(error.message, true); }
+  };
+  $("pause").onclick = async () => {
+    try {
+      await command("pause");
+      paused = true;
+      $("pause").hidden = true;
+      $("resume").hidden = false;
+      closePeer();
+      setState("已暂停");
+      overlay("观看已暂停", "采集与编码已停止。点击“恢复”继续观看。");
+    } catch (error) { notice(error.message, true); }
+  };
+  $("resume").onclick = async () => {
+    try {
+      await command("resume");
+      paused = false;
+      $("pause").hidden = false;
+      $("resume").hidden = true;
+      await negotiate();
+    } catch (error) { notice(error.message, true); }
+  };
+  $("uninstall").onclick = async () => {
+    if (!confirm("将停止并彻底卸载 RD，同时清理开机自启、看门狗和防火墙规则。确定继续吗？")) return;
+    const confirmation = prompt("请输入“卸载RD”确认卸载。");
+    if (confirmation !== "卸载RD") return;
+    try {
+      await command("uninstall", confirmation);
+      showPair("RD 正在卸载。");
+    } catch (error) { notice(error.message, true); }
+  };
+  $("leave").onclick = async () => {
+    if (signal?.readyState === WebSocket.OPEN) {
+      try { signal.send(JSON.stringify({type:"bye", sessionId:session.sessionId, requestId:crypto.randomUUID()})); } catch {}
+    }
+    try { await api("/api/view/revoke?sessionId=" + encodeURIComponent(session.sessionId), {method:"POST"}); } catch {}
+    showPair();
+  };
+})();
+</script>
+</body>
+</html>
