@@ -112,6 +112,7 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
   let signalGeneration = 0, peerGeneration = 0, after = 0, intentional = false;
   let reconnectTimer = 0, expiryTimer = 0, metricTimer = 0, negotiating = false, paused = false;
   let signalReady = null, resolveSignal = null, rejectSignal = null, pending = new Map();
+  let reconnectFailures = 0;
 
   const messages = {
     invalid_code:"配对码不正确。",
@@ -261,6 +262,8 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
     const opened = signalReady;
     socket.onopen = () => {
       if (generation !== signalGeneration) { socket.close(); return; }
+      reconnectFailures = 0;
+      $("notice").hidden = true;
       if (signalReady) { const done = resolveSignal; signalReady = null; resolveSignal = rejectSignal = null; done?.(); }
       // 页面与 API 跨源，浏览器不会带第三方 Cookie：首帧先发会话令牌完成认证。
       if (token) socket.send(JSON.stringify({type:"auth", token}));
@@ -290,11 +293,12 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
       rejectPending(new Error("信令连接中断，请重试。"));
       if (intentional) return;
       if (event.code === 4401) { showPair("观看会话已过期，请重新连接。"); return; }
-      // 服务端受 Supabase 连接寿命限制，约每 50 秒主动以 1000 关闭一次，属预期轮换：
-      // 静默重连，不弹提示，否则观看过程中会周期性闪红字。
-      if (event.code === 1000) {
+      // 服务端受 Supabase 连接寿命限制，约每 50 秒轮换一次信令；网关通常不透传关闭帧，
+      // 客户端只会看到 1006。这类定期轮换必须静默处理，连续多次失败才提示用户。
+      reconnectFailures++;
+      if (reconnectFailures <= 2) {
         setState("信令重连中…");
-        reconnectTimer = setTimeout(connectSignal, 200);
+        reconnectTimer = setTimeout(connectSignal, 300);
         return;
       }
       setState("信令断开(代码 " + (event.code || 1006) + (event.wasClean ? "，正常关闭" : "，异常关闭") + ")，重连中");
