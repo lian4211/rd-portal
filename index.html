@@ -290,6 +290,13 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
       rejectPending(new Error("信令连接中断，请重试。"));
       if (intentional) return;
       if (event.code === 4401) { showPair("观看会话已过期，请重新连接。"); return; }
+      // 服务端受 Supabase 连接寿命限制，约每 50 秒主动以 1000 关闭一次，属预期轮换：
+      // 静默重连，不弹提示，否则观看过程中会周期性闪红字。
+      if (event.code === 1000) {
+        setState("信令重连中…");
+        reconnectTimer = setTimeout(connectSignal, 200);
+        return;
+      }
       setState("信令断开(代码 " + (event.code || 1006) + (event.wasClean ? "，正常关闭" : "，异常关闭") + ")，重连中");
       notice("信令连接被断开（代码 " + (event.code || 1006) + "）。常见原因：1006/1015＝网络或代理拦截 WSS；403＝页面来源不在白名单；4401＝会话过期，请重新输入配对码。");
       reconnectTimer = setTimeout(connectSignal, 1000);
