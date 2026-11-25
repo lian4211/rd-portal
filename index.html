@@ -285,7 +285,8 @@ label{display:block;margin-bottom:calc(9px * var(--site-space));color:#d5e5de;fo
       rejectPending(new Error("信令连接中断，请重试。"));
       if (intentional) return;
       if (event.code === 4401) { showPair("观看会话已过期，请重新连接。"); return; }
-      setState("信令重连中");
+      setState("信令断开(" + (event.code || 1006) + ")，重连中");
+      notice("信付认连被断开（代码 " + (event.code || 1006) + "）。常见原因：1006/1015＝网络或代理拦截 WSS；403＝页面来源不在白名单；4401＝会话过期，请重新输入配对码。");
       reconnectTimer = setTimeout(connectSignal, 1000);
     };
     return opened;
